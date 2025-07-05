@@ -1,9 +1,7 @@
 import boto3
-import argparse
 import uuid
 from datetime import datetime, timezone
 
-# DynamoDB初期化
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('announcements')
 
@@ -25,38 +23,19 @@ def insert_announcement(announcement_id, lang, title, body, publish_at):
     print(f"✅ Inserted [{lang}]")
 
 def main():
-    parser = argparse.ArgumentParser(description="Post multilingual announcement to DynamoDB")
+    translations = {
+        "ja": {"title": "プレシーズンがやってきました！", "body": "7月になりプレシーズンの季節が近づいてきました。v1.11.1からプレシーズンのスケジュールも確認できるようになりました。アプリを最新版に更新してプレシーズンの準備にとりかかりましょう！"},
+        "en": {"title": "Pre-season is here!", "body": "July is here and preseason is approaching fast. Starting with v1.11.1, you can now check the preseason schedule. Update to the latest version of the app and get ready for pre-season!"},
+        "es": {"title": "¡La pretemporada ya está aquí!", "body": "¡Julio ya llegó y la pretemporada se acerca! Desde la versión v1.11.1 puedes consultar el calendario de la pretemporada. ¡Actualiza la aplicación a la última versión y prepárate!"},
+        "fr": {"title": "La pré-saison est là !", "body": "Juillet est là et la pré-saison approche à grands pas. À partir de la version 1.11.1, vous pouvez désormais consulter le calendrier de la pré-saison. Mettez à jour l'application vers la dernière version et préparez-vous pour la pré-saison !"},
+        "ru": {"title": "Предсезонье уже здесь!", "body": "Июль уже наступил, а предсезонье не за горами. Начиная с версии 1.11.1, вы можете проверить расписание предсезонья. Обновите приложение до последней версии и готовьтесь к предсезонью!"}
+    }
 
-    parser.add_argument('--title-ja', required=True)
-    parser.add_argument('--body-ja', required=True)
-    parser.add_argument('--title-en', required=True)
-    parser.add_argument('--body-en', required=True)
-    parser.add_argument('--title-es', required=True)
-    parser.add_argument('--body-es', required=True)
-    parser.add_argument('--publish-at', required=False, help="ISO format: e.g., 2025-05-06T00:00:00Z")
-
-    args = parser.parse_args()
-
-    # publish_at を決定
-    if args.publish_at:
-        try:
-            dt = datetime.fromisoformat(args.publish_at.replace("Z", "+00:00"))
-            publish_at = dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        except ValueError:
-            print("❌ Invalid publish_at format. Use ISO 8601 (e.g., 2025-05-06T00:00:00Z)")
-            return
-    else:
-        publish_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        print(f"📅 No publish_at provided. Using current time: {publish_at}")
+    publish_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    print(f"📅 Using publish_at: {publish_at}")
 
     announcement_id = generate_announcement_id()
     print(f"🆔 Generated Notice ID: {announcement_id}")
-
-    translations = {
-        "ja": {"title": args.title_ja, "body": args.body_ja},
-        "en": {"title": args.title_en, "body": args.body_en},
-        "es": {"title": args.title_es, "body": args.body_es}
-    }
 
     for lang, content in translations.items():
         insert_announcement(announcement_id, lang, content['title'], content['body'], publish_at)
