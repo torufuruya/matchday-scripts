@@ -5,6 +5,7 @@ Send push notifications to all users in DynamoDB `users` table via Amazon SNS.
 """
 
 import os
+import json
 import logging
 from typing import Dict, List
 import boto3
@@ -66,7 +67,17 @@ def send_push(user: Dict):
         return
 
     try:
-        sns.publish(TargetArn=target_arn, Message=message)
+        sns.publish(
+            TargetArn=target_arn,
+            MessageStructure="json",
+            Message=json.dumps({
+                "GCM": json.dumps({
+                    "notification": {
+                        "body": message
+                    }
+                })
+            })
+        )
         with lock:
             success += 1
     except ClientError as e:
