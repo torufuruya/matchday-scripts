@@ -6,6 +6,7 @@ import argparse
 
 def generate_match_id(home_team_id, away_team_id, utc_date):
     ids = sorted([str(home_team_id), str(away_team_id)])
+    # FIXME: utc_date can be changed so better not to use it.
     base = f"{ids[0]}|{ids[1]}|{utc_date}"
     return hashlib.sha1(base.encode("utf-8")).hexdigest()[:12]
 
