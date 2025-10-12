@@ -114,7 +114,7 @@ migration_map: Dict[int, str] = {
 # ==========================================
 
 
-TABLE_NAME = os.environ.get("TABLE_NAME", "team_follows-stg")
+TABLE_NAME = os.environ.get("TABLE_NAME", "team_follows")
 AWS_REGION = os.environ.get("AWS_REGION", "ap-northeast-1")
 
 # DynamoDB client（強化リトライ設定）
