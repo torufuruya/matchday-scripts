@@ -1,1 +1,0 @@
-/Users/torufuruya/Dev/matchday-scripts/.devbox/virtenv/python/bin/venvShellHook.sh
